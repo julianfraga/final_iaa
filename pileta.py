@@ -7,15 +7,38 @@ Created on Mon May 29 14:02:12 2023
 
 import pandas as pd
 import os
-os.chdir(r'D:/Documentos/UNSAM/Materias/IAA/final_iaa')
-archivo = 'selldocs.tsv'
 
-df = pd.read_csv(archivo, decimal = ',', sep='\t')
+#os.chdir(r'D:/Documentos/UNSAM/Materias/IAA/final_iaa')
+#archivo = 'selldocs.tsv'
+#archivo2 = 'Sell Docs 2023.tsv'
+#df
+
+# DF's
+
+df_2022 = pd.read_csv('./Sell Docs 2022.tsv', decimal = ',', sep='\t')
+df_2022.drop(['Campaign'], axis = 1, inplace = True )
+
+df_2023 = pd.read_csv('./Sell Docs 2023.tsv', decimal = ',', sep='\t' )
+df_2023.drop(['Link'], axis = 1, inplace = True )
+
+df_lG = pd.read_csv('./df_lead_gen.csv', decimal = ',')
+
+#%%
+df = pd.concat([df_2022, df_2023], axis = 0, ignore_index = True)
+
+#En el Mercho
+df = pd.merge(df, df_lG, how = 'left', left_on = ['Lead Email', 'Name'], right_on = ['Email 1', 'Username'])
+
+#%% 
+
 df.head()
 columnas = list(df.columns)
 columnas_lower = [columna.lower().replace(' ','_') for columna in columnas]
-columnas_lower[-1] = 'total_rate'
-columnas_lower[8] = 'avg_views'
+columnas_lower[15] = 'total_rate'
+columnas_lower[7] = 'avg_views_sell' #hay 2 columnas de avg views, mantememos las dos?  
+columnas_lower[8] = '#ad'
+
+# hasta arriba de esta linea toque 
 rename_dic = {columnas[i]:columnas_lower[i] for i in range(len(columnas))}
 
 df.rename(columns = rename_dic, inplace=True)

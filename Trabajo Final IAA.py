@@ -86,7 +86,7 @@ df_lead_gen.drop(df_lead_gen[sin_emails].index, inplace = True)
 #Guardado de archivo 
 df_lead_gen.to_csv('./df_lead_gen.csv', index=False)
 
-#%% Fromateado de numeros 
+
 
 
 
