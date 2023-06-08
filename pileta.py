@@ -29,7 +29,7 @@ def corregir_numero(valor):
         if len(partes) == 2 and partes[1].isdigit():
             return int(partes[0] + partes[1])
         elif len(partes) == 3 and partes[2].isdigit():
-            return int(partes[0] + partes[1]+partes[2])
+            return int(partes[0] + partes[1] + partes[2])
     return valor
 
 df['likes'] = pd.to_numeric(df['likes'].apply(corregir_numero), errors ='coerce')
@@ -128,38 +128,56 @@ for index, fila in df.iterrows():
     categoria = df.at[index,'avg_views']
     if categoria in diccionario.keys():
         df.at[index,'avg_views_num']=diccionario[categoria]
+        
     if df.at[index,'#ad'] in ['Yes', 'yes']:
         df.at[index,'#ad'] = True
     else:
         df.at[index,'#ad'] = False
+        
+    if df.at[index,'#studypool'] in ['Yes', 'yes']:
+        df.at[index,'#studypool'] = True
+    else:
+        df.at[index,'#studypool'] = False
+    
     if np.isnan(df.at[index,'comments']):
         df.at[index,'comments'] = 0
+        
     if np.isnan(df.at[index,'views']):
         df.at[index,'views'] = 0
+        
     if np.isnan(df.at[index,'times_shared']):
         df.at[index,'times_shared'] = 0
+        
     if np.isnan(df.at[index,'likes']):
         df.at[index,'likes'] = 0
         
-df = df[df['avg_views_num']>=0]
+df = df[df['avg_views_num']>0]
 #%%
 
-features = ['platform','avg_views_num','#ad','#studypool']
+features = ['avg_views_num','#ad','#studypool']
 views_ad = df['views']
 likes_ad = df['likes']
 shares_ad = df['times_shared']
 comments_ad = df['comments']
 df['engagement'] = (likes_ad+shares_ad+comments_ad)/views_ad
+df = df[df['views']>0]
+df = df[df['engagement']>0]
+df = df[df['engagement']<2]
 target = df['engagement']
 features = df[features]
-#%%
-from sklearn.model_selection import train_test_split as tts
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-from sklearn.pipeline import Pipeline, make_pipeline
-from sklearn.preprocessing import StandardScaler
 
-features_train, features_test, target_train, target_test = tts(features, target, test_size=0.33)
-regresor = LogisticRegression()
-regresor.fit(features_train, target_train)
-predicciones_train = regresor.predict(features_test)
+# from sklearn.model_selection import train_test_split as tts
+# from sklearn.linear_model import LinearRegression
+# from sklearn.metrics import accuracy_score
+# from sklearn.pipeline import Pipeline, make_pipeline
+# from sklearn.preprocessing import StandardScaler
+
+
+# features_train, features_test, target_train, target_test = tts(features, target, test_size=0.33)
+# regresor = LinearRegression()
+# regresor.fit(features_train, target_train)
+# predicciones_train = regresor.predict(features_train)
+# predicciones_test = regresor.predict(features_test)
+# import matplotlib.pyplot as plt
+# plt.plot(target_train.to_list(), predicciones_train, marker = '.', linestyle = '', alpha = 0.5)
+# plt.plot(target_train.to_list(), marker = '.', linestyle = '', alpha = 0.5)
